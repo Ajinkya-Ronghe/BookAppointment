@@ -3,6 +3,7 @@ import { Typography, TextField, Button, makeStyles } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "../../util/fetch";
 import Topbar from "../../common/Topbar"; // Import Topbar
+import { useHistory } from "react-router-dom"; // Import useHistory
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -48,6 +49,7 @@ const decodeToken = (token) => {
 
 const BookAppointment = ({ baseUrl }) => {
   const classes = useStyles();
+  const history = useHistory(); // Initialize useHistory
   const [doctors, setDoctors] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [appointmentDate, setAppointmentDate] = useState("");
@@ -91,6 +93,14 @@ const BookAppointment = ({ baseUrl }) => {
       return;
     }
 
+    // Validate date and time
+    const currentDate = new Date();
+    const selectedDateTime = new Date(`${appointmentDate}T${timeSlot}`);
+    if (selectedDateTime < currentDate) {
+      alert("You cannot select a past date or time for the appointment.");
+      return;
+    }
+
     const appointmentData = {
       doctorId: selectedDoctor.id,
       appointmentDate,
@@ -100,12 +110,13 @@ const BookAppointment = ({ baseUrl }) => {
     };
 
     try {
-      const response = await axios.post(`${baseUrl}/appointments`, appointmentData, {
+      await axios.post(`${baseUrl}/appointments`, appointmentData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       alert("Appointment booked successfully!");
+      history.push("/dashboard"); // Redirect to the dashboard
     } catch (error) {
       console.error("Error booking appointment:", error);
       alert("Failed to book appointment. Please try again.");
