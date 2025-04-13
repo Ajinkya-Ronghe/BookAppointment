@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Button, Card, CardContent, makeStyles } from "@material-ui/core";
+import { Tabs, Tab, Typography, Card, CardContent, makeStyles } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import axios from "../../util/fetch";
 import AppointmentsTable from "../appointment/AppointmentsTable";
-import Topbar from "../../common/Topbar"; // Import Topbar
-import "./Dashboard.css";
+import BookAppointment from "../appointment/BookAppointment";
+import DoctorList from "../doctorList/DoctorList";
+import RateAppointment from "../appointment/RateAppointment";
+import Topbar from "../../common/Topbar";
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -16,21 +18,14 @@ const useStyles = makeStyles(() => ({
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     marginTop: "80px", // Add margin to account for the fixed Topbar
   },
+  tabContent: {
+    marginTop: "20px",
+  },
   title: {
     fontSize: "2rem",
     fontWeight: "bold",
     marginBottom: "20px",
     color: "#333",
-  },
-  buttonContainer: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: "20px",
-  },
-  button: {
-    padding: "10px 20px",
-    fontSize: "1rem",
-    textTransform: "none",
   },
   card: {
     marginBottom: "20px",
@@ -57,6 +52,7 @@ const decodeToken = (token) => {
 const Dashboard = ({ baseUrl }) => {
   const classes = useStyles();
   const history = useHistory();
+  const [activeTab, setActiveTab] = useState(0);
   const [appointments, setAppointments] = useState([]);
 
   useEffect(() => {
@@ -91,49 +87,38 @@ const Dashboard = ({ baseUrl }) => {
     fetchAppointments();
   }, [baseUrl]);
 
-  const navigateTo = (path) => {
-    history.push(path);
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
   };
 
   return (
     <div>
-      <Topbar /> {/* Add Topbar */}
+      <Topbar />
       <div className={classes.container}>
-        <Typography className={classes.title}>Dashboard</Typography>
-        <div className={classes.buttonContainer}>
-          <Button
-            className={classes.button}
-            variant="contained"
-            color="primary"
-            onClick={() => navigateTo("/appointments/new")}
-          >
-            Book Appointment
-          </Button>
-          <Button
-            className={classes.button}
-            variant="contained"
-            color="secondary"
-            onClick={() => navigateTo("/doctors")}
-          >
-            View Doctors
-          </Button>
-          <Button
-            className={classes.button}
-            variant="contained"
-            color="default"
-            onClick={() => navigateTo("/appointments/rate")}
-          >
-            Rate Appointment
-          </Button>
+        <Tabs value={activeTab} onChange={handleTabChange} centered>
+          <Tab label="Home" />
+          <Tab label="Book Appointment" />
+          <Tab label="View Doctors" />
+          <Tab label="Rate Appointment" />
+        </Tabs>
+        <div className={classes.tabContent}>
+          {activeTab === 0 && (
+            <div>
+              <Typography className={classes.title}>Dashboard</Typography>
+              <Card className={classes.card}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Your Appointments
+                  </Typography>
+                  <AppointmentsTable appointments={appointments} />
+                </CardContent>
+              </Card>
+            </div>
+          )}
+          {activeTab === 1 && <BookAppointment baseUrl={baseUrl} />}
+          {activeTab === 2 && <DoctorList baseUrl={baseUrl} />}
+          {activeTab === 3 && <RateAppointment baseUrl={baseUrl} />}
         </div>
-        <Card className={classes.card}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Your Appointments
-            </Typography>
-            <AppointmentsTable appointments={appointments} />
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

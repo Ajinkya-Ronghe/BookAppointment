@@ -1,13 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Button, Typography, makeStyles, Radio, RadioGroup, FormControlLabel } from "@material-ui/core";
+import {
+  Typography,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Radio,
+  TextField,
+  makeStyles,
+} from "@material-ui/core";
+import { Rating } from "@material-ui/lab"; // Import Rating component
 import axios from "../../util/fetch";
-import Topbar from "../../common/Topbar"; // Import Topbar
-import AppointmentsTable from "./AppointmentsTable";
+import Topbar from "../../common/Topbar";
 
 const useStyles = makeStyles(() => ({
   container: {
     padding: "20px",
-    maxWidth: "600px",
+    maxWidth: "800px",
     margin: "50px auto",
     backgroundColor: "#fff",
     borderRadius: "8px",
@@ -24,8 +37,6 @@ const useStyles = makeStyles(() => ({
   button: {
     marginTop: "20px",
     padding: "10px 20px",
-    fontSize: "1rem",
-    textTransform: "none",
   },
   tableContainer: {
     marginTop: "20px",
@@ -53,7 +64,7 @@ const RateAppointment = ({ baseUrl }) => {
   const classes = useStyles();
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
-  const [rating, setRating] = useState("");
+  const [rating, setRating] = useState(0); // Use 0 as the default rating
   const [feedback, setFeedback] = useState("");
 
   useEffect(() => {
@@ -79,7 +90,6 @@ const RateAppointment = ({ baseUrl }) => {
           },
         });
 
-        console.log("Appointments fetched:", response.data);
         setAppointments(response.data);
       } catch (error) {
         console.error("Error fetching appointments:", error);
@@ -115,32 +125,46 @@ const RateAppointment = ({ baseUrl }) => {
 
   return (
     <div>
-      <Topbar /> {/* Add Topbar */}
+      <Topbar />
       <div className={classes.container}>
         <Typography className={classes.title}>Rate Appointment</Typography>
-        <div className={classes.tableContainer}>
-          <Typography variant="h6">Select an Appointment to Rate</Typography>
-          <RadioGroup
-            value={selectedAppointmentId}
-            onChange={(e) => setSelectedAppointmentId(e.target.value)}
-          >
-            {appointments.map((appointment) => (
-              <FormControlLabel
-                key={appointment.appointmentId}
-                value={appointment.appointmentId}
-                control={<Radio />}
-                label={`Appointment ID: ${appointment.appointmentId}, Date: ${appointment.appointmentDate}, Time: ${appointment.timeSlot}`}
-              />
-            ))}
-          </RadioGroup>
-        </div>
-        <TextField
-          label="Rating (1-5)"
-          type="number"
+        <TableContainer component={Paper} className={classes.tableContainer}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Select</TableCell>
+                <TableCell>Appointment ID</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell>Time Slot</TableCell>
+                <TableCell>Doctor Name</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {appointments.map((appointment) => (
+                <TableRow key={appointment.appointmentId}>
+                  <TableCell>
+                    <Radio
+                      checked={selectedAppointmentId === appointment.appointmentId}
+                      onChange={() => setSelectedAppointmentId(appointment.appointmentId)}
+                      value={appointment.appointmentId}
+                    />
+                  </TableCell>
+                  <TableCell>{appointment.appointmentId}</TableCell>
+                  <TableCell>{appointment.appointmentDate}</TableCell>
+                  <TableCell>{appointment.timeSlot}</TableCell>
+                  <TableCell>{appointment.doctorName}</TableCell> {/* Show doctor name */}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Typography variant="h6" gutterBottom>
+          Rate the Appointment
+        </Typography>
+        <Rating
+          name="appointment-rating"
           value={rating}
-          onChange={(e) => setRating(e.target.value)}
-          fullWidth
-          margin="normal"
+          onChange={(event, newValue) => setRating(newValue)}
         />
         <TextField
           label="Feedback"

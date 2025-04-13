@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden; /* Prevent body scrolling */
 }
 
 code {
@@ -15,12 +16,12 @@ code {
 #root {
   position: relative;
   min-height: 100vh;
-  overflow: hidden;
+  overflow: hidden; /* Prevent root scrolling */
 }
 
 #root::before {
   content: "";
-  position: absolute;
+  position: fixed; /* Fix the background image */
   top: 0;
   left: 0;
   width: 100%;
@@ -29,11 +30,12 @@ code {
   background-size: cover; /* Ensure the image covers the entire container */
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Prevent the image from repeating */
-  filter: blur(5px); /* Apply a slight blur effect */
   z-index: -1; /* Place the background behind the content */
 }
 
 .app-container {
   position: relative;
   z-index: 1; /* Ensure content is above the background */
+  height: 100vh; /* Make the container take full viewport height */
+  overflow-y: auto; /* Enable scrolling for content */
 }
