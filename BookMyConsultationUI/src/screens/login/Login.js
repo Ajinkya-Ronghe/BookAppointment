@@ -7,7 +7,7 @@ import "./Login.css";
 const useStyles = makeStyles(() => ({
   appBar: {
     zIndex: 1201, // Ensure it appears above other components
-    backgroundColor: "#007bff", // Blue background for the Topbar
+    backgroundColor: "#3f51b5", // Updated color code from Dashboard's Topbar
   },
   toolbar: {
     display: "flex",

@@ -34,6 +34,15 @@ const useStyles = makeStyles(() => ({
     marginBottom: "20px",
     color: "#333",
   },
+  button: {
+    marginBottom: "20px", // Add spacing below the button
+    textTransform: "none",
+    backgroundColor: "#3f51b5",
+    color: "#fff",
+    "&:hover": {
+      backgroundColor: "#0056b3",
+    },
+  },
   filterContainer: {
     display: "flex",
     justifyContent: "space-between",
@@ -136,10 +145,23 @@ const DoctorList = ({ baseUrl }) => {
     setFilteredDoctors(filtered);
   }, [speciality, search, doctors]);
 
+  const handleAddDoctor = () => {
+    // Logic for adding a doctor (e.g., redirect to an Add Doctor form)
+    console.log("Redirect to Add Doctor form");
+  };
+  
   return (
     <div>
       <Topbar /> {/* Add Topbar */}
       <div className={classes.container}>
+        {/* Add Doctor Button */}
+        <Button
+          className={classes.button}
+          variant="contained"
+          onClick={handleAddDoctor}
+        >
+          Add Doctor
+        </Button>
         <Typography className={classes.title}>Doctor List</Typography>
         <div className={classes.filterContainer}>
           <TextField
