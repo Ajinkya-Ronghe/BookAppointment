@@ -3,6 +3,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+!**/src/main/**/application.properties
 
 ### STS ###
 .apt_generated
@@ -27,8 +28,11 @@ target/
 /.nb-gradle/
 build/
 node_modules/
+
 !**/src/main/**/build/
 !**/src/test/**/build/
 !**/src/main/**/node_modules/
+!**/src/main/resources/application.properties
 ### VS Code ###
 .vscode/
+bookmyconsultation/src/main/resources/application.properties
