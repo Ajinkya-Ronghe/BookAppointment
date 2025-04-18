@@ -47,8 +47,16 @@ public class AuthTokenService {
 
 		final JwtTokenProvider tokenProvider = new JwtTokenProvider(user.getPassword());
 		final ZonedDateTime expiresAt = now.plusHours(8);
-		final String authToken = tokenProvider.generateToken(user.getEmailId(), now, expiresAt);
-		System.out.println(authToken);
+
+		// Check if the user has the admin role
+		String role = "user"; // Default role
+		if ("admin".equalsIgnoreCase(user.getRole())) {
+			role = "admin";
+		}
+
+		// Generate token with role
+		final String authToken = tokenProvider.generateToken(user.getEmailId(), now, expiresAt, role);
+
 		final UserAuthToken authTokenEntity = new UserAuthToken();
 		authTokenEntity.setUser(user);
 		authTokenEntity.setAccessToken(authToken);

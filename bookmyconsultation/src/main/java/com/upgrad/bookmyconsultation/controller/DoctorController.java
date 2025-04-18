@@ -6,7 +6,9 @@ import com.upgrad.bookmyconsultation.exception.InvalidInputException;
 import com.upgrad.bookmyconsultation.model.TimeSlot;
 import com.upgrad.bookmyconsultation.service.DoctorService;
 import com.upgrad.bookmyconsultation.util.ValidationUtils;
+import com.upgrad.bookmyconsultation.provider.token.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,9 +26,21 @@ public class DoctorController {
 
     // POST method to register a doctor
     @PostMapping
-    public ResponseEntity<Doctor> registerDoctor(@RequestBody Doctor doctor) throws InvalidInputException {
-        Doctor savedDoctor = doctorService.register(doctor);
-        return ResponseEntity.ok(savedDoctor);
+    public ResponseEntity<?> registerDoctor(@RequestHeader("authorization") String accessToken, @RequestBody Doctor doctor) {
+        String token = accessToken.replace("Bearer ", "");
+        String role = (String) JwtTokenProvider.decodeToken(token).get("role");
+
+        if (!"admin".equalsIgnoreCase(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied. Only admins can add doctors.");
+        }
+
+        try {
+            ValidationUtils.validate(doctor);
+            Doctor savedDoctor = doctorService.register(doctor);
+            return ResponseEntity.ok(savedDoctor);
+        } catch (InvalidInputException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     // GET method to retrieve a doctor by ID

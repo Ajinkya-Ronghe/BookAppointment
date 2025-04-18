@@ -9,12 +9,16 @@ package com.upgrad.bookmyconsultation.provider.token;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.upgrad.bookmyconsultation.exception.GenericErrorCode;
 import com.upgrad.bookmyconsultation.exception.UnexpectedException;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -34,15 +38,30 @@ public class JwtTokenProvider {
 		}
 	}
 
-	public String generateToken(final String userUuid, final ZonedDateTime issuedDateTime, final ZonedDateTime expiresDateTime) {
+	public String generateToken(final String userUuid, final ZonedDateTime issuedDateTime, final ZonedDateTime expiresDateTime, final String role) {
 
 		final Date issuedAt = new Date(issuedDateTime.getLong(ChronoField.INSTANT_SECONDS));
 		final Date expiresAt = new Date(expiresDateTime.getLong(ChronoField.INSTANT_SECONDS));
 
-		return JWT.create().withIssuer(TOKEN_ISSUER) //
+		return JWT.create()
+				.withIssuer(TOKEN_ISSUER)
 				.withKeyId(UUID.randomUUID().toString())
-				.withAudience(userUuid) //
-				.withIssuedAt(issuedAt).withExpiresAt(expiresAt).sign(algorithm);
+				.withAudience(userUuid)
+				.withClaim("role", role) // Add role to the token
+				.withIssuedAt(issuedAt)
+				.withExpiresAt(expiresAt)
+				.sign(algorithm);
+	}
+
+	public static Map<String, Object> decodeToken(final String token) {
+		try {
+			DecodedJWT decodedJWT = JWT.decode(token);
+			Map<String, Object> claims = new HashMap<>();
+			decodedJWT.getClaims().forEach((key, value) -> claims.put(key, value.as(Object.class)));
+			return claims;
+		} catch (JWTDecodeException e) {
+			throw new RuntimeException("Invalid token: " + e.getMessage(), e);
+		}
 	}
 
 }

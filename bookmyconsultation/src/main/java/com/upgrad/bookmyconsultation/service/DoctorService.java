@@ -36,19 +36,11 @@ public class DoctorService {
     public Doctor register(Doctor doctor) throws InvalidInputException {
         ValidationUtils.validate(doctor);
 
-        if (doctor.getAddress() == null) {
-            throw new InvalidInputException("Address cannot be null");
-        }
+        /*if (doctor.getAddress() == null || doctor.getAddress().isEmpty()) {
+            throw new InvalidInputException("Address cannot be null or empty");
+        }*/
 
         doctor.setId(UUID.randomUUID().toString());
-
-        if (doctor.getSpeciality() == null) {
-            doctor.setSpeciality(Speciality.GENERAL_PHYSICIAN);
-        }
-
-        Address savedAddress = addressRepository.save(doctor.getAddress());
-        doctor.setAddress(savedAddress);
-
         return doctorRepository.save(doctor);
     }
 

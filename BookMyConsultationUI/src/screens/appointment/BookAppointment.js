@@ -55,6 +55,8 @@ const BookAppointment = ({ baseUrl }) => {
   const [appointmentDate, setAppointmentDate] = useState("");
   const [timeSlot, setTimeSlot] = useState("");
   const [status, setStatus] = useState("CONFIRMED");
+  const [priorMedicalHistory, setPriorMedicalHistory] = useState("");
+  const [symptoms, setSymptoms] = useState("");
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -103,10 +105,15 @@ const BookAppointment = ({ baseUrl }) => {
 
     const appointmentData = {
       doctorId: selectedDoctor.id,
+      doctorName: `${selectedDoctor.firstName} ${selectedDoctor.lastName}`,
+      userId,
+      userName: decodedToken?.name || "N/A", // Assuming the token contains the user's name
       appointmentDate,
       timeSlot,
       status,
-      userId, // Use the extracted userId
+      priorMedicalHistory,
+      symptoms,
+      createdDate: new Date().toISOString(), // Current date and time
     };
 
     try {
@@ -164,6 +171,24 @@ const BookAppointment = ({ baseUrl }) => {
           InputLabelProps={{
             shrink: true,
           }}
+        />
+        <TextField
+          label="Prior Medical History"
+          value={priorMedicalHistory}
+          onChange={(e) => setPriorMedicalHistory(e.target.value)}
+          fullWidth
+          margin="normal"
+          multiline
+          rows={3}
+        />
+        <TextField
+          label="Symptoms"
+          value={symptoms}
+          onChange={(e) => setSymptoms(e.target.value)}
+          fullWidth
+          margin="normal"
+          multiline
+          rows={3}
         />
         <Button
           className={classes.button}

@@ -45,9 +45,8 @@ public class Doctor {
     @Column(name = "dob")
     private String dob;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id")
-    private Address address;
+    @JoinColumn(name = "address")
+    private String address;
 
     @Column(name = "mobile")
     private String mobile;

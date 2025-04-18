@@ -13,10 +13,31 @@ import {
   Button,
   Card,
   CardContent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   makeStyles,
 } from "@material-ui/core";
 import axios from "../../util/fetch";
-import Topbar from "../../common/Topbar"; // Import Topbar
+import Topbar from "../../common/Topbar";
+
+const decodeToken = (token) => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('Failed to decode token:', error);
+    return null;
+  }
+};
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -26,7 +47,7 @@ const useStyles = makeStyles(() => ({
     backgroundColor: "#f9f9f9",
     borderRadius: "8px",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    marginTop: "80px", // Add margin to account for the fixed Topbar
+    marginTop: "80px",
   },
   title: {
     fontSize: "2rem",
@@ -35,7 +56,7 @@ const useStyles = makeStyles(() => ({
     color: "#333",
   },
   button: {
-    marginBottom: "20px", // Add spacing below the button
+    marginBottom: "20px",
     textTransform: "none",
     backgroundColor: "#3f51b5",
     color: "#fff",
@@ -50,7 +71,7 @@ const useStyles = makeStyles(() => ({
     gap: "20px",
   },
   clearButton: {
-    width: "300px", // Set a fixed width for the Clear Filters button
+    width: "300px",
     marginBottom: "20px",
   },
   card: {
@@ -68,6 +89,30 @@ const DoctorList = ({ baseUrl }) => {
   const [speciality, setSpeciality] = useState("");
   const [search, setSearch] = useState("");
   const [specialities, setSpecialities] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [newDoctor, setNewDoctor] = useState({
+    firstName: "",
+    lastName: "",
+    speciality: "",
+    dob: "",
+    mobile: "",
+    emailId: "",
+    pan: "",
+    highestQualification: "",
+    college: "",
+    totalYearsOfExp: "",
+    rating: "",
+    address: "",
+  });
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("accessToken");
+    if (token) {
+      const decodedToken = decodeToken(token);
+      setIsAdmin(decodedToken?.role === "admin");
+    }
+  }, []);
 
   // Fetch all doctors
   useEffect(() => {
@@ -97,7 +142,7 @@ const DoctorList = ({ baseUrl }) => {
             Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
           },
         });
-        setSpecialities(response.data); // Update specialities state
+        setSpecialities(response.data);
       } catch (error) {
         console.error("Error fetching specialities:", error);
       }
@@ -146,22 +191,54 @@ const DoctorList = ({ baseUrl }) => {
   }, [speciality, search, doctors]);
 
   const handleAddDoctor = () => {
-    // Logic for adding a doctor (e.g., redirect to an Add Doctor form)
-    console.log("Redirect to Add Doctor form");
+    setOpen(true);
   };
-  
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setNewDoctor({ ...newDoctor, [name]: value });
+  };
+
+  const handleSubmit = async () => {
+    const token = sessionStorage.getItem("accessToken");
+    try {
+      await axios.post(`${baseUrl}/doctors`, newDoctor, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      alert("Doctor added successfully!");
+      setOpen(false);
+      // Refresh the doctor list
+      const response = await axios.get(`${baseUrl}/doctors`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setDoctors(response.data);
+    } catch (error) {
+      console.error("Error adding doctor:", error);
+      alert("Failed to add doctor. Please try again.");
+    }
+  };
+
   return (
     <div>
-      <Topbar /> {/* Add Topbar */}
+      <Topbar />
       <div className={classes.container}>
-        {/* Add Doctor Button */}
-        <Button
-          className={classes.button}
-          variant="contained"
-          onClick={handleAddDoctor}
-        >
-          Add Doctor
-        </Button>
+        {isAdmin && (
+          <Button
+            className={classes.button}
+            variant="contained"
+            onClick={handleAddDoctor}
+          >
+            Add Doctor
+          </Button>
+        )}
         <Typography className={classes.title}>Doctor List</Typography>
         <div className={classes.filterContainer}>
           <TextField
@@ -194,7 +271,7 @@ const DoctorList = ({ baseUrl }) => {
               setSpeciality("");
               setSearch("");
             }}
-            className={classes.clearButton} // Apply the custom style
+            className={classes.clearButton}
           >
             Clear Filters
           </Button>
@@ -244,6 +321,126 @@ const DoctorList = ({ baseUrl }) => {
             </TableContainer>
           </CardContent>
         </Card>
+        <Dialog open={open} onClose={handleClose}>
+          <DialogTitle>Add Doctor</DialogTitle>
+          <DialogContent>
+            <TextField
+              label="First Name"
+              name="firstName"
+              value={newDoctor.firstName}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Last Name"
+              name="lastName"
+              value={newDoctor.lastName}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              select
+              label="Speciality"
+              name="speciality"
+              value={newDoctor.speciality}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            >
+              {specialities.map((spec) => (
+                <MenuItem key={spec} value={spec}>
+                  {spec}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              label="Date of Birth"
+              name="dob"
+              type="date" // Use date picker
+              value={newDoctor.dob}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+              InputLabelProps={{
+                shrink: true, // Ensures the label stays above the input
+              }}
+            />
+            <TextField
+              label="Mobile"
+              name="mobile"
+              value={newDoctor.mobile}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Email"
+              name="emailId"
+              value={newDoctor.emailId}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="PAN"
+              name="pan"
+              value={newDoctor.pan}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Qualification"
+              name="highestQualification"
+              value={newDoctor.highestQualification}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="College"
+              name="college"
+              value={newDoctor.college}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Experience (Years)"
+              name="totalYearsOfExp"
+              value={newDoctor.totalYearsOfExp}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Rating"
+              name="rating"
+              value={newDoctor.rating}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Address"
+              name="address"
+              value={newDoctor.address}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="secondary">
+              Cancel
+            </Button>
+            <Button onClick={handleSubmit} color="primary">
+              Submit
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     </div>
   );

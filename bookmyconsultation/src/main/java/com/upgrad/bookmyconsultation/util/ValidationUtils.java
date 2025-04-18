@@ -44,7 +44,7 @@ public class ValidationUtils {
             errorFields.add("Last Name");
         }
         if (doctor.getDob() == null || !isValid(doctor.getDob())) {
-            errorFields.add("Date of Birth");
+            errorFields.add("Date of Birth (format: YYYY-MM-DD)");
         }
         if (!errorFields.isEmpty()) {
             throw new InvalidInputException(errorFields);

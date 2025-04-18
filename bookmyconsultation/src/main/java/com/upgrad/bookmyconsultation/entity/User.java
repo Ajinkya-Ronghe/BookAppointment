@@ -42,4 +42,7 @@ public class User {
 
     @Column(name = "salt")
     private String salt;
+
+    @Column(name = "role")
+    private String role;
 }

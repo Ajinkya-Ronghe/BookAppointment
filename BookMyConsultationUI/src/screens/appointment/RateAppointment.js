@@ -105,17 +105,36 @@ const RateAppointment = ({ baseUrl }) => {
       return;
     }
 
+    const selectedAppointment = appointments.find(
+      (appointment) => appointment.appointmentId === selectedAppointmentId
+    );
+
+    if (!selectedAppointment) {
+      alert("Selected appointment not found.");
+      return;
+    }
+
+    const { doctorId } = selectedAppointment;
+
+    const ratingData = {
+      appointmentId: selectedAppointmentId,
+      doctorId,
+      rating,
+      comments: feedback,
+    };
+
     try {
       const token = sessionStorage.getItem("accessToken");
-      await axios.post(
-        `${baseUrl}/appointments/${selectedAppointmentId}/rate`,
-        { rating, feedback },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      if (!token) {
+        alert("You are not logged in. Please log in to rate the appointment.");
+        return;
+      }
+
+      await axios.post(`${baseUrl}/ratings`, ratingData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       alert("Appointment rated successfully!");
     } catch (error) {
       console.error("Error rating appointment:", error);
