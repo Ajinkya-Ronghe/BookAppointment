@@ -1,16 +1,17 @@
 package com.upgrad.bookmyconsultation.service;
 
-import com.upgrad.bookmyconsultation.entity.Appointment;
-import com.upgrad.bookmyconsultation.exception.InvalidInputException;
-import com.upgrad.bookmyconsultation.exception.ResourceUnAvailableException;
-import com.upgrad.bookmyconsultation.exception.SlotUnavailableException;
-import com.upgrad.bookmyconsultation.repository.AppointmentRepository;
-import com.upgrad.bookmyconsultation.util.ValidationUtils;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.upgrad.bookmyconsultation.entity.Appointment;
+import com.upgrad.bookmyconsultation.exception.InvalidInputException;
+import com.upgrad.bookmyconsultation.exception.SlotUnavailableException;
+import com.upgrad.bookmyconsultation.repository.AppointmentRepository;
+import com.upgrad.bookmyconsultation.util.ValidationUtils;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

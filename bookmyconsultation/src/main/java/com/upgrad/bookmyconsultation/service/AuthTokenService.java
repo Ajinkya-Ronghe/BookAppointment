@@ -7,6 +7,15 @@
  */
 package com.upgrad.bookmyconsultation.service;
 
+import java.time.ZonedDateTime;
+
+import javax.validation.constraints.NotNull;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.upgrad.bookmyconsultation.entity.User;
 import com.upgrad.bookmyconsultation.entity.UserAuthToken;
 import com.upgrad.bookmyconsultation.exception.AuthorizationFailedException;
@@ -15,13 +24,6 @@ import com.upgrad.bookmyconsultation.provider.token.JwtTokenProvider;
 import com.upgrad.bookmyconsultation.repository.UserAuthTokenRepository;
 import com.upgrad.bookmyconsultation.repository.UserRepository;
 import com.upgrad.bookmyconsultation.util.DateTimeProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.validation.constraints.NotNull;
-import java.time.ZonedDateTime;
 
 
 @Service

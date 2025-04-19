@@ -1,6 +1,12 @@
 package com.upgrad.bookmyconsultation.service;
 
-import com.upgrad.bookmyconsultation.entity.Address;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.upgrad.bookmyconsultation.entity.Doctor;
 import com.upgrad.bookmyconsultation.enums.Speciality;
 import com.upgrad.bookmyconsultation.exception.InvalidInputException;
@@ -10,14 +16,9 @@ import com.upgrad.bookmyconsultation.repository.AddressRepository;
 import com.upgrad.bookmyconsultation.repository.AppointmentRepository;
 import com.upgrad.bookmyconsultation.repository.DoctorRepository;
 import com.upgrad.bookmyconsultation.util.ValidationUtils;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import springfox.documentation.annotations.Cacheable;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import lombok.extern.log4j.Log4j2;
+import springfox.documentation.annotations.Cacheable;
 
 @Log4j2
 @Service

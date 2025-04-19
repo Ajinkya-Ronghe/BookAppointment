@@ -1,24 +1,21 @@
 package com.upgrad.bookmyconsultation.servlet;
 
-import com.upgrad.bookmyconsultation.entity.UserAuthToken;
-import com.upgrad.bookmyconsultation.exception.AuthorizationFailedException;
-import com.upgrad.bookmyconsultation.exception.RestErrorCode;
-import com.upgrad.bookmyconsultation.exception.UnauthorizedException;
-import com.upgrad.bookmyconsultation.provider.BearerAuthDecoder;
-import com.upgrad.bookmyconsultation.service.AuthTokenService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
+import static com.upgrad.bookmyconsultation.constants.ResourceConstants.BASIC_AUTH_PREFIX;
+
+import java.io.IOException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
-import static com.upgrad.bookmyconsultation.constants.ResourceConstants.BASIC_AUTH_PREFIX;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
+
+import com.upgrad.bookmyconsultation.exception.RestErrorCode;
+import com.upgrad.bookmyconsultation.exception.UnauthorizedException;
+import com.upgrad.bookmyconsultation.provider.BearerAuthDecoder;
 
 @Component
 public class AuthFilter extends ApiFilter {

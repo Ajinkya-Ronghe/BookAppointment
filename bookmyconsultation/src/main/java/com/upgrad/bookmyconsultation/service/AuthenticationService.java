@@ -8,6 +8,11 @@
 package com.upgrad.bookmyconsultation.service;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.upgrad.bookmyconsultation.entity.User;
 import com.upgrad.bookmyconsultation.entity.UserAuthToken;
 import com.upgrad.bookmyconsultation.exception.ApplicationException;
@@ -16,10 +21,6 @@ import com.upgrad.bookmyconsultation.exception.UserErrorCode;
 import com.upgrad.bookmyconsultation.model.AuthorizedUser;
 import com.upgrad.bookmyconsultation.provider.PasswordCryptographyProvider;
 import com.upgrad.bookmyconsultation.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service

@@ -1,8 +1,5 @@
 package com.upgrad.bookmyconsultation.exception;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public enum RestErrorCode implements ErrorCode {
 
     ATH_001("ATH-001", "Authorization header is missing"),
