@@ -39,11 +39,11 @@ public class AuthTokenService {
 
 		final ZonedDateTime now = DateTimeProvider.currentProgramTime();
 
-		final UserAuthToken userAuthToken = userAuthDao.findByUserEmailId(user.getEmailId());
+/* 		final UserAuthToken userAuthToken = userAuthDao.findByUserEmailId(user.getEmailId());
 		final UserAuthTokenVerifier tokenVerifier = new UserAuthTokenVerifier(userAuthToken);
 		if (tokenVerifier.isActive()) {
 			return userAuthToken;
-		}
+		} */
 
 		final JwtTokenProvider tokenProvider = new JwtTokenProvider(user.getPassword());
 		final ZonedDateTime expiresAt = now.plusHours(8);
