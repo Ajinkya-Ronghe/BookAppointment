@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography, TextField, Button, makeStyles } from "@material-ui/core";
+import { Typography, TextField, Button, makeStyles, MenuItem, Select, FormControl, InputLabel } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "../../util/fetch";
 import Topbar from "../../common/Topbar"; // Import Topbar
@@ -29,6 +29,51 @@ const useStyles = makeStyles(() => ({
     textTransform: "none",
   },
 }));
+
+const timeSlots = [
+  "09:00 AM",
+  "09:15 AM",
+  "09:30 AM",
+  "09:45 AM",
+  "10:00 AM",
+  "10:15 AM",
+  "10:30 AM",
+  "10:45 AM",
+  "11:00 AM",
+  "11:15 AM",
+  "11:30 AM",
+  "11:45 AM",
+  "12:00 PM",
+  "12:15 PM",
+  "12:30 PM",
+  "12:45 PM",
+  "01:00 PM",
+  "01:15 PM",
+  "01:30 PM",
+  "01:45 PM",
+  "02:00 PM",
+  "02:15 PM",
+  "02:30 PM",
+  "02:45 PM",
+  "03:00 PM",
+  "03:15 PM",
+  "03:30 PM",
+  "03:45 PM",
+  "04:00 PM",
+  "04:15 PM",
+  "04:30 PM",
+  "04:45 PM",
+  "05:00 PM",
+];
+
+const menuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: 200, // Limit the height of the dropdown
+      overflowY: "auto", // Add a scrollbar
+    },
+  },
+};
 
 const decodeToken = (token) => {
   try {
@@ -76,25 +121,50 @@ const BookAppointment = ({ baseUrl }) => {
   }, [baseUrl]);
 
   const handleSubmit = async () => {
+    // Check if a doctor is selected
     if (!selectedDoctor) {
       alert("Please select a doctor.");
       return;
     }
-
+  
+    // Check if the appointment date is provided
+    if (!appointmentDate) {
+      alert("Please select an appointment date.");
+      return;
+    }
+  
+    // Check if the time slot is provided
+    if (!timeSlot) {
+      alert("Please select a time slot.");
+      return;
+    }
+  
+    // Check if prior medical history is provided
+    if (!priorMedicalHistory.trim()) {
+      alert("Please provide prior medical history.");
+      return;
+    }
+  
+    // Check if symptoms are provided
+    if (!symptoms.trim()) {
+      alert("Please provide symptoms.");
+      return;
+    }
+  
     const token = sessionStorage.getItem("accessToken");
     if (!token) {
       alert("No access token found. Please log in again.");
       return;
     }
-
+  
     const decodedToken = decodeToken(token);
     const userId = decodedToken?.aud; // Extract userId from the 'aud' field
-
+  
     if (!userId) {
       alert("Failed to extract user information. Please log in again.");
       return;
     }
-
+  
     // Validate date and time
     const currentDate = new Date();
     const selectedDateTime = new Date(`${appointmentDate}T${timeSlot}`);
@@ -102,7 +172,7 @@ const BookAppointment = ({ baseUrl }) => {
       alert("You cannot select a past date or time for the appointment.");
       return;
     }
-
+  
     const appointmentData = {
       doctorId: selectedDoctor.id,
       doctorName: `${selectedDoctor.firstName} ${selectedDoctor.lastName}`,
@@ -115,7 +185,7 @@ const BookAppointment = ({ baseUrl }) => {
       symptoms,
       createdDate: new Date().toISOString(), // Current date and time
     };
-
+  
     try {
       await axios.post(`${baseUrl}/appointments`, appointmentData, {
         headers: {
@@ -126,7 +196,14 @@ const BookAppointment = ({ baseUrl }) => {
       history.push("/dashboard"); // Redirect to the dashboard
     } catch (error) {
       console.error("Error booking appointment:", error);
-      alert("Failed to book appointment. Please try again.");
+      // Check if the error message is "The selected slot is unavailable."
+      if (error.response && error.response.status === 400) {
+        if (error.response.data === "The selected slot is unavailable.") {
+          alert("The selected slot is unavailable. Please choose a different time.");
+        }
+      } else {
+        alert("Failed to book appointment. Please try again.");
+      }
     }
   };
 
@@ -161,17 +238,21 @@ const BookAppointment = ({ baseUrl }) => {
             shrink: true,
           }}
         />
-        <TextField
-          label="Time Slot"
-          type="time"
-          value={timeSlot}
-          onChange={(e) => setTimeSlot(e.target.value)}
-          fullWidth
-          margin="normal"
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
+        <FormControl fullWidth margin="normal">
+          <InputLabel id="time-slot-label">Time Slot</InputLabel>
+          <Select
+            labelId="time-slot-label"
+            value={timeSlot}
+            onChange={(e) => setTimeSlot(e.target.value)}
+            MenuProps={menuProps}
+          >
+            {timeSlots.map((slot) => (
+              <MenuItem key={slot} value={slot}>
+                {slot}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <TextField
           label="Prior Medical History"
           value={priorMedicalHistory}

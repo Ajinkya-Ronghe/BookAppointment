@@ -13,9 +13,10 @@ import {
   TextField,
   makeStyles,
 } from "@material-ui/core";
-import { Rating } from "@material-ui/lab"; // Import Rating component
+import { Rating } from "@material-ui/lab";
 import axios from "../../util/fetch";
 import Topbar from "../../common/Topbar";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -26,7 +27,7 @@ const useStyles = makeStyles(() => ({
     borderRadius: "8px",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     textAlign: "center",
-    marginTop: "80px", // Add margin to account for the fixed Topbar
+    marginTop: "80px",
   },
   title: {
     fontSize: "1.5rem",
@@ -62,9 +63,10 @@ const decodeToken = (token) => {
 
 const RateAppointment = ({ baseUrl }) => {
   const classes = useStyles();
+  const history = useHistory();
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
-  const [rating, setRating] = useState(0); // Use 0 as the default rating
+  const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState("");
 
   useEffect(() => {
@@ -90,7 +92,17 @@ const RateAppointment = ({ baseUrl }) => {
           },
         });
 
-        setAppointments(response.data);
+        // Filter appointments with status CONFIRMED
+        const confirmedAppointments = response.data.filter(
+          (appointment) => appointment.status === "CONFIRMED"
+        );
+
+        // Sort appointments by Appointment ID in descending order
+        const sortedAppointments = confirmedAppointments.sort(
+          (a, b) => b.appointmentId - a.appointmentId
+        );
+
+        setAppointments(sortedAppointments);
       } catch (error) {
         console.error("Error fetching appointments:", error);
       }
@@ -135,7 +147,11 @@ const RateAppointment = ({ baseUrl }) => {
           Authorization: `Bearer ${token}`,
         },
       });
+
       alert("Appointment rated successfully!");
+
+      // Redirect to Home Tab
+     // history.push("/");
     } catch (error) {
       console.error("Error rating appointment:", error);
       alert("Failed to rate appointment. Please try again.");
@@ -171,7 +187,7 @@ const RateAppointment = ({ baseUrl }) => {
                   <TableCell>{appointment.appointmentId}</TableCell>
                   <TableCell>{appointment.appointmentDate}</TableCell>
                   <TableCell>{appointment.timeSlot}</TableCell>
-                  <TableCell>{appointment.doctorName}</TableCell> {/* Show doctor name */}
+                  <TableCell>{appointment.doctorName}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

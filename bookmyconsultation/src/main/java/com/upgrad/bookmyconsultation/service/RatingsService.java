@@ -1,9 +1,11 @@
 package com.upgrad.bookmyconsultation.service;
 
+import com.upgrad.bookmyconsultation.entity.Appointment;
 import com.upgrad.bookmyconsultation.entity.Doctor;
 import com.upgrad.bookmyconsultation.entity.Rating;
 import com.upgrad.bookmyconsultation.repository.DoctorRepository;
 import com.upgrad.bookmyconsultation.repository.RatingsRepository;
+import com.upgrad.bookmyconsultation.repository.AppointmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,9 @@ public class RatingsService {
 
     @Autowired
     private DoctorRepository doctorRepository;
+
+    @Autowired
+    private AppointmentRepository appointmentRepository;
 
     // Method to submit ratings
     public void submitRatings(Rating rating) {
@@ -38,6 +43,12 @@ public class RatingsService {
 
         // Save the updated doctor
         doctorRepository.save(doctor);
+
+        // Update the appointment status to CLOSED
+        Appointment appointment = appointmentRepository.findById(Long.parseLong(rating.getAppointmentId()))
+                .orElseThrow(() -> new RuntimeException("Appointment not found for ID: " + rating.getAppointmentId()));
+        appointment.setStatus("CLOSED");
+        appointmentRepository.save(appointment);
     }
 }
 

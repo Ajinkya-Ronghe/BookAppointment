@@ -165,9 +165,7 @@ const DoctorList = ({ baseUrl }) => {
         const lastName = doctor.lastName || "";
         const emailId = doctor.emailId || "";
         const mobile = doctor.mobile || "";
-        const address = doctor.address
-          ? `${doctor.address.addressLine1}, ${doctor.address.city}, ${doctor.address.state}, ${doctor.address.postcode}`
-          : "";
+        const address = doctor.address || "";
         const dob = doctor.dob || "";
         const qualification = doctor.highestQualification || "";
         const experience = doctor.totalYearsOfExp ? doctor.totalYearsOfExp.toString() : "";
@@ -305,11 +303,7 @@ const DoctorList = ({ baseUrl }) => {
                       <TableCell>{doctor.speciality || "N/A"}</TableCell>
                       <TableCell>{doctor.emailId || "N/A"}</TableCell>
                       <TableCell>{doctor.mobile || "N/A"}</TableCell>
-                      <TableCell>
-                        {doctor.address
-                          ? `${doctor.address.addressLine1}, ${doctor.address.city}, ${doctor.address.state}, ${doctor.address.postcode}`
-                          : "N/A"}
-                      </TableCell>
+                      <TableCell>{doctor.address || "N/A"}</TableCell>
                       <TableCell>{doctor.dob || "N/A"}</TableCell>
                       <TableCell>{doctor.highestQualification || "N/A"}</TableCell>
                       <TableCell>{doctor.totalYearsOfExp || "N/A"}</TableCell>
