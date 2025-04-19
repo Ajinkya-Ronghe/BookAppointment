@@ -103,7 +103,11 @@ const DoctorList = ({ baseUrl }) => {
     college: "",
     totalYearsOfExp: "",
     rating: "",
-    address: "",
+    addressLine1: "", // New field
+    addressLine2: "", // New field
+    city: "",         // New field
+    postcode: "",     // New field
+    state: "",        // New field
   });
 
   useEffect(() => {
@@ -303,7 +307,7 @@ const DoctorList = ({ baseUrl }) => {
                       <TableCell>{doctor.speciality || "N/A"}</TableCell>
                       <TableCell>{doctor.emailId || "N/A"}</TableCell>
                       <TableCell>{doctor.mobile || "N/A"}</TableCell>
-                      <TableCell>{doctor.address || "N/A"}</TableCell>
+                      <TableCell>{`${doctor.addressLine1}, ${doctor.addressLine2}, ${doctor.city}, ${doctor.postcode}, ${doctor.state}` || "N/A"}</TableCell>
                       <TableCell>{doctor.dob || "N/A"}</TableCell>
                       <TableCell>{doctor.highestQualification || "N/A"}</TableCell>
                       <TableCell>{doctor.totalYearsOfExp || "N/A"}</TableCell>
@@ -352,13 +356,13 @@ const DoctorList = ({ baseUrl }) => {
             <TextField
               label="Date of Birth"
               name="dob"
-              type="date" // Use date picker
+              type="date"
               value={newDoctor.dob}
               onChange={handleChange}
               fullWidth
               margin="normal"
               InputLabelProps={{
-                shrink: true, // Ensures the label stays above the input
+                shrink: true,
               }}
             />
             <TextField
@@ -418,9 +422,41 @@ const DoctorList = ({ baseUrl }) => {
               margin="normal"
             />
             <TextField
-              label="Address"
-              name="address"
-              value={newDoctor.address}
+              label="Address Line 1"
+              name="addressLine1"
+              value={newDoctor.addressLine1}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Address Line 2"
+              name="addressLine2"
+              value={newDoctor.addressLine2}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="City"
+              name="city"
+              value={newDoctor.city}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Postcode"
+              name="postcode"
+              value={newDoctor.postcode}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="State"
+              name="state"
+              value={newDoctor.state}
               onChange={handleChange}
               fullWidth
               margin="normal"

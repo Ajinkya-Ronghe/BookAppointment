@@ -1,5 +1,6 @@
 package com.upgrad.bookmyconsultation.controller;
 
+import com.upgrad.bookmyconsultation.entity.Address;
 import com.upgrad.bookmyconsultation.entity.Doctor;
 import com.upgrad.bookmyconsultation.enums.Speciality;
 import com.upgrad.bookmyconsultation.exception.InvalidInputException;
@@ -7,6 +8,7 @@ import com.upgrad.bookmyconsultation.model.TimeSlot;
 import com.upgrad.bookmyconsultation.service.DoctorService;
 import com.upgrad.bookmyconsultation.util.ValidationUtils;
 import com.upgrad.bookmyconsultation.provider.token.JwtTokenProvider;
+import com.upgrad.bookmyconsultation.repository.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +25,10 @@ public class DoctorController {
 
     @Autowired
     private DoctorService doctorService;
+    @Autowired
+    private AddressRepository addressRepository;
 
+    // POST method to register a doctor
     // POST method to register a doctor
     @PostMapping
     public ResponseEntity<?> registerDoctor(@RequestHeader("authorization") String accessToken, @RequestBody Doctor doctor) {
@@ -37,6 +42,17 @@ public class DoctorController {
         try {
             ValidationUtils.validate(doctor);
             Doctor savedDoctor = doctorService.register(doctor);
+
+            // Save address in the address table
+            Address address = new Address();
+            address.setId(savedDoctor.getId()); // Use the doctor's ID as the address ID
+            address.setAddressLine1(doctor.getAddressLine1());
+            address.setAddressLine2(doctor.getAddressLine2());
+            address.setCity(doctor.getCity());
+            address.setPostcode(doctor.getPostcode());
+            address.setState(doctor.getState());
+            addressRepository.save(address);
+
             return ResponseEntity.ok(savedDoctor);
         } catch (InvalidInputException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

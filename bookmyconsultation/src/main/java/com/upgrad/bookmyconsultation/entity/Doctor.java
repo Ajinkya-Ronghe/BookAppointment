@@ -46,6 +46,21 @@ public class Doctor {
     @JoinColumn(name = "address")
     private String address;
 
+    @Column(name = "address_line1")
+    private String addressLine1;
+
+    @Column(name = "address_line2")
+    private String addressLine2;
+
+    @Column(name = "city")
+    private String city;
+
+    @Column(name = "postcode")
+    private String postcode;
+
+    @Column(name = "state")
+    private String state;
+
     @Column(name = "mobile")
     private String mobile;
 

@@ -62,10 +62,25 @@ public class DoctorService {
     @Cacheable(value = "doctorListByRating")
     private List<Doctor> getActiveDoctorsSortedByRating() {
         log.info("Fetching doctor list from the database");
-        return doctorRepository.findAllByOrderByRatingDesc()
+
+        // Fetch all doctors sorted by rating
+        List<Doctor> doctors = doctorRepository.findAllByOrderByRatingDesc()
                 .stream()
                 .limit(20)
                 .collect(Collectors.toList());
+
+        // Fetch and map addresses for each doctor
+        doctors.forEach(doctor -> {
+            addressRepository.findById(doctor.getId()).ifPresent(address -> {
+                doctor.setAddressLine1(address.getAddressLine1());
+                doctor.setAddressLine2(address.getAddressLine2());
+                doctor.setCity(address.getCity());
+                doctor.setPostcode(address.getPostcode());
+                doctor.setState(address.getState());
+            });
+        });
+
+        return doctors;
     }
 
     // Method to get available time slots for a doctor
