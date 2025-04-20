@@ -5,8 +5,6 @@ import Dashboard from "../screens/dashboard/Dashboard";
 import DoctorList from "../screens/doctorList/DoctorList";
 import BookAppointment from "../screens/appointment/BookAppointment";
 import RateAppointment from "../screens/appointment/RateAppointment";
-import Login from "../screens/login/Login";
-import Register from "../screens/register/Register";
 import PrivateRoute from "../common/PrivateRoute"; // Import PrivateRoute
 
 const Controller = () => {
@@ -33,17 +31,9 @@ const Controller = () => {
             path="/doctors"
             component={(props) => <DoctorList {...props} baseUrl={baseUrl} />}
           />
-          <Route
-            path="/login"
-            render={(props) => <Login {...props} baseUrl={baseUrl} />}
-          />
-          <Route
-            path="/register"
-            render={(props) => <Register {...props} baseUrl={baseUrl} />}
-          />
-          {/* Catch-All Route */}
+          {/* Catch-All Route: redirect everything else to home */}
           <Route path="*">
-            <Redirect to="/login" />
+            <Redirect to="/" />
           </Route>
         </Switch>
       </div>

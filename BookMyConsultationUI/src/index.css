@@ -5,7 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow: hidden; /* Prevent body scrolling */
+  /* Remove overflow: hidden to allow scrolling if needed */
 }
 
 code {
@@ -16,26 +16,14 @@ code {
 #root {
   position: relative;
   min-height: 100vh;
-  overflow: hidden; /* Prevent root scrolling */
+  /* Remove overflow: hidden and background-image */
 }
 
-#root::before {
-  content: "";
-  position: fixed; /* Fix the background image */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('./assets/doctor.png'); /* Global background image */
-  background-size: cover; /* Ensure the image covers the entire container */
-  background-position: center; /* Center the image */
-  background-repeat: no-repeat; /* Prevent the image from repeating */
-  z-index: -1; /* Place the background behind the content */
-}
+/* Remove #root::before with background-image */
 
 .app-container {
   position: relative;
-  z-index: 1; /* Ensure content is above the background */
-  height: 100vh; /* Make the container take full viewport height */
-  overflow-y: auto; /* Enable scrolling for content */
+  z-index: 1;
+  height: 100vh;
+  overflow-y: auto;
 }

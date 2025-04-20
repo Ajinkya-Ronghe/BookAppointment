@@ -1,224 +1,124 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
-  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Radio,
+  Typography,
   TextField,
   makeStyles,
 } from "@material-ui/core";
 import { Rating } from "@material-ui/lab";
 import axios from "../../util/fetch";
-import Topbar from "../../common/Topbar";
-import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles(() => ({
-  container: {
-    padding: "20px",
-    maxWidth: "800px",
-    margin: "50px auto",
-    backgroundColor: "#fff",
-    borderRadius: "8px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    textAlign: "center",
-    marginTop: "80px",
+  dialogHeader: {
+    background: "purple",
+    height: 70,
+    padding: 11,
+    color: "#fff",
+    display: "flex",
+    alignItems: "center",
+    fontWeight: 600,
+    fontSize: 20,
   },
-  title: {
-    fontSize: "1.5rem",
-    fontWeight: "bold",
-    marginBottom: "20px",
-    color: "#333",
+  content: {
+    padding: 20,
+    textAlign: "left",
   },
-  button: {
-    marginTop: "20px",
-    padding: "10px 20px",
+  field: {
+    marginBottom: 15,
+    width: "100%",
   },
-  tableContainer: {
-    marginTop: "20px",
+  error: {
+    color: "red",
+    fontSize: 14,
+    marginTop: 4,
+    marginBottom: 8,
   },
 }));
 
-const decodeToken = (token) => {
-  try {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map((c) => `%${("00" + c.charCodeAt(0).toString(16)).slice(-2)}`)
-        .join("")
-    );
-    return JSON.parse(jsonPayload);
-  } catch (error) {
-    console.error("Error decoding token:", error);
-    return null;
-  }
-};
-
-const RateAppointment = ({ baseUrl }) => {
+const RateAppointment = ({ open, onClose, appointment, baseUrl }) => {
   const classes = useStyles();
-  const history = useHistory();
-  const [appointments, setAppointments] = useState([]);
-  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const [rating, setRating] = useState(0);
-  const [feedback, setFeedback] = useState("");
+  const [comments, setComments] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const token = sessionStorage.getItem("accessToken");
-        if (!token) {
-          console.error("No access token found.");
-          return;
-        }
-
-        const decodedToken = decodeToken(token);
-        const userId = decodedToken?.aud;
-
-        if (!userId) {
-          console.error("Failed to extract userId from token.");
-          return;
-        }
-
-        const response = await axios.get(`${baseUrl}/appointments/user/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        // Filter appointments with status CONFIRMED
-        const confirmedAppointments = response.data.filter(
-          (appointment) => appointment.status === "CONFIRMED"
-        );
-
-        // Sort appointments by Appointment ID in descending order
-        const sortedAppointments = confirmedAppointments.sort(
-          (a, b) => b.appointmentId - a.appointmentId
-        );
-
-        setAppointments(sortedAppointments);
-      } catch (error) {
-        console.error("Error fetching appointments:", error);
-      }
-    };
-
-    fetchAppointments();
-  }, [baseUrl]);
-
-  const handleRateAppointment = async () => {
-    if (!selectedAppointmentId) {
-      alert("Please select an appointment to rate.");
+  const handleSubmit = async () => {
+    setError("");
+    if (!rating) {
+      setError("Submit a rating");
       return;
     }
-
-    const selectedAppointment = appointments.find(
-      (appointment) => appointment.appointmentId === selectedAppointmentId
-    );
-
-    if (!selectedAppointment) {
-      alert("Selected appointment not found.");
-      return;
-    }
-
-    const { doctorId } = selectedAppointment;
-
-    const ratingData = {
-      appointmentId: selectedAppointmentId,
-      doctorId,
-      rating,
-      comments: feedback,
-    };
-
+    setSubmitting(true);
     try {
       const token = sessionStorage.getItem("accessToken");
-      if (!token) {
-        alert("You are not logged in. Please log in to rate the appointment.");
-        return;
-      }
-
-      await axios.post(`${baseUrl}/ratings`, ratingData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      await axios.post(
+        `${baseUrl}/ratings`,
+        {
+          appointmentId: appointment.appointmentId,
+          doctorId: appointment.doctorId,
+          rating,
+          comments,
         },
-      });
-
-      alert("Appointment rated successfully!");
-
-      // Redirect to Home Tab
-     // history.push("/");
-    } catch (error) {
-      console.error("Error rating appointment:", error);
-      alert("Failed to rate appointment. Please try again.");
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setSubmitting(false);
+      onClose(true);
+    } catch (err) {
+      setSubmitting(false);
+      setError("Failed to submit rating. Please try again.");
     }
   };
 
   return (
-    <div>
-      <Topbar />
-      <div className={classes.container}>
-        <Typography className={classes.title}>Rate Appointment</Typography>
-        <TableContainer component={Paper} className={classes.tableContainer}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Select</TableCell>
-                <TableCell>Appointment ID</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell>Time Slot</TableCell>
-                <TableCell>Doctor Name</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {appointments.map((appointment) => (
-                <TableRow key={appointment.appointmentId}>
-                  <TableCell>
-                    <Radio
-                      checked={selectedAppointmentId === appointment.appointmentId}
-                      onChange={() => setSelectedAppointmentId(appointment.appointmentId)}
-                      value={appointment.appointmentId}
-                    />
-                  </TableCell>
-                  <TableCell>{appointment.appointmentId}</TableCell>
-                  <TableCell>{appointment.appointmentDate}</TableCell>
-                  <TableCell>{appointment.timeSlot}</TableCell>
-                  <TableCell>{appointment.doctorName}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <Typography variant="h6" gutterBottom>
-          Rate the Appointment
+    <Dialog open={open} onClose={() => onClose(false)} maxWidth="xs" fullWidth>
+      <DialogTitle disableTypography className={classes.dialogHeader}>
+        Rate an Appointment
+      </DialogTitle>
+      <DialogContent className={classes.content}>
+        <Typography variant="h6" style={{ marginBottom: 16 }}>
+          {appointment?.doctorName}
         </Typography>
         <Rating
           name="appointment-rating"
           value={rating}
-          onChange={(event, newValue) => setRating(newValue)}
+          onChange={(_, newValue) => setRating(newValue)}
+          style={{ marginBottom: 16 }}
         />
         <TextField
-          label="Feedback"
-          type="text"
-          value={feedback}
-          onChange={(e) => setFeedback(e.target.value)}
-          fullWidth
-          margin="normal"
+          label="Comments"
+          value={comments}
+          onChange={e => setComments(e.target.value)}
+          className={classes.field}
+          variant="outlined"
+          multiline
+          rows={2}
         />
+        {error && <div className={classes.error}>{error}</div>}
+      </DialogContent>
+      <DialogActions style={{ justifyContent: "center", paddingBottom: 16 }}>
         <Button
-          className={classes.button}
           variant="contained"
           color="primary"
-          onClick={handleRateAppointment}
+          onClick={handleSubmit}
+          disabled={submitting}
+          style={{ background: '#1976d2', color: '#fff', textTransform: 'none' }}
         >
-          Submit Rating
+          Rate Appointment
         </Button>
-      </div>
-    </div>
+        <Button
+          variant="outlined"
+          onClick={() => onClose(false)}
+        >
+          Cancel
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

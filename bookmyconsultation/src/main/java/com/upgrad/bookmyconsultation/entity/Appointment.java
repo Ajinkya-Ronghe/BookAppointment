@@ -37,6 +37,9 @@ public class Appointment {
     @Column(name = "user_id") // Correctly map to the user_id column in the database
     private String userId;
 
+    @Column(name = "user_email_id") // Correctly map to the user_id column in the database
+    private String userEmailId;
+
     @Column(name = "time_slot")
     private String timeSlot;
 

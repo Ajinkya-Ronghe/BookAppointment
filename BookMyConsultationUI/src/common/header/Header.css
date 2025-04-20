@@ -1,0 +1,85 @@
+.header-root {
+  background: purple;
+  height: 70px;
+  padding: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1201;
+}
+
+.header-logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo {
+  background: #ff7f7f;
+  height: 35px;
+  width: auto;
+  border-radius: 4px;
+  margin-right: 16px;
+  object-fit: contain;
+}
+
+.header-title {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.header-btn-container {
+  display: flex;
+  align-items: center;
+}
+
+.header-btn {
+  text-transform: none;
+}
+
+.header-modal-overlay {
+  background: rgba(0,0,0,0.5);
+  z-index: 3000; /* Increased to ensure modal is above all content */
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: auto;
+  /* Prevent scrolling when modal is open */
+  overflow: hidden;
+}
+
+body.ReactModal__Body--open {
+  overflow: hidden !important;
+}
+
+.header-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  outline: none;
+  border: none;
+  background: transparent;
+  z-index: 4000; /* Ensure modal content is above overlay and all other content */
+}
+
+.header-modal .MuiCard-root {
+  border-radius: 12px;
+  overflow: hidden;
+  min-width: 350px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+}
+
+.header-modal .auth-title {
+  background: purple;
+  color: #fff;
+  text-align: center;
+  padding: 24px 0 0 0;
+  font-weight: 600;
+  font-size: 1.25rem;
+}

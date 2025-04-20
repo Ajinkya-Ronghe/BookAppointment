@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Typography, TextField, Button, makeStyles, MenuItem, Select, FormControl, InputLabel } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "../../util/fetch";
-import Topbar from "../../common/Topbar"; // Import Topbar
+import Header from "../../common/header/Header"; // Import Header
 import { useHistory } from "react-router-dom"; // Import useHistory
 
 const useStyles = makeStyles(() => ({
@@ -209,7 +209,7 @@ const BookAppointment = ({ baseUrl }) => {
 
   return (
     <div>
-      <Topbar /> {/* Add Topbar */}
+      <Header /> {/* Add Header */}
       <div className={classes.container}>
         <Typography className={classes.title}>Book Appointment</Typography>
         <Autocomplete

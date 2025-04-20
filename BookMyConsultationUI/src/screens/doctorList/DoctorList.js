@@ -20,7 +20,9 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import axios from "../../util/fetch";
-import Topbar from "../../common/Topbar";
+import Header from "../../common/header/Header";
+import BookAppointment from "./BookAppointment";
+import DoctorDetails from "./DoctorDetails";
 
 const decodeToken = (token) => {
   try {
@@ -82,7 +84,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const DoctorList = ({ baseUrl }) => {
+const DoctorList = ({ baseUrl, hideTitle, hideSearch, setLoginModalOpen }) => {
   const classes = useStyles();
   const [doctors, setDoctors] = useState([]);
   const [filteredDoctors, setFilteredDoctors] = useState([]);
@@ -91,6 +93,10 @@ const DoctorList = ({ baseUrl }) => {
   const [specialities, setSpecialities] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [open, setOpen] = useState(false);
+  const [bookOpen, setBookOpen] = useState(false);
+  const [bookDoctor, setBookDoctor] = useState(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [detailsDoctor, setDetailsDoctor] = useState(null);
   const [newDoctor, setNewDoctor] = useState({
     firstName: "",
     lastName: "",
@@ -230,33 +236,25 @@ const DoctorList = ({ baseUrl }) => {
 
   return (
     <div>
-      <Topbar />
       <div className={classes.container}>
         {isAdmin && (
-          <Button
-            className={classes.button}
-            variant="contained"
-            onClick={handleAddDoctor}
-          >
-            Add Doctor
-          </Button>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+            <Button
+              className={classes.button}
+              variant="contained"
+              onClick={handleAddDoctor}
+            >
+              Add Doctor
+            </Button>
+          </div>
         )}
-        <Typography className={classes.title}>Doctor List</Typography>
-        <div className={classes.filterContainer}>
-          <TextField
-            label="Search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            fullWidth
-            margin="normal"
-            placeholder="Search by any field (e.g., name, email, mobile, address, etc.)"
-          />
+        <div className={classes.filterContainer} style={{ justifyContent: 'center', gap: 0 }}>
           <TextField
             select
             label="Filter by Speciality"
             value={speciality}
             onChange={(e) => setSpeciality(e.target.value)}
-            fullWidth
+            style={{ width: 340 }}
             margin="normal"
           >
             <MenuItem value="">All Specialities</MenuItem>
@@ -266,62 +264,89 @@ const DoctorList = ({ baseUrl }) => {
               </MenuItem>
             ))}
           </TextField>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              setSpeciality("");
-              setSearch("");
-            }}
-            className={classes.clearButton}
-          >
-            Clear Filters
-          </Button>
         </div>
-        <Card className={classes.card}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Doctors
-            </Typography>
-            <TableContainer component={Paper} className={classes.tableContainer}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>First Name</TableCell>
-                    <TableCell>Last Name</TableCell>
-                    <TableCell>Speciality</TableCell>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Mobile</TableCell>
-                    <TableCell>Address</TableCell>
-                    <TableCell>DOB</TableCell>
-                    <TableCell>Qualification</TableCell>
-                    <TableCell>Experience (Years)</TableCell>
-                    <TableCell>Rating</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredDoctors.map((doctor) => (
-                    <TableRow key={doctor.id}>
-                      <TableCell>{doctor.firstName || "N/A"}</TableCell>
-                      <TableCell>{doctor.lastName || "N/A"}</TableCell>
-                      <TableCell>{doctor.speciality || "N/A"}</TableCell>
-                      <TableCell>{doctor.emailId || "N/A"}</TableCell>
-                      <TableCell>{doctor.mobile || "N/A"}</TableCell>
-                      <TableCell>{`${doctor.addressLine1}, ${doctor.addressLine2}, ${doctor.city}, ${doctor.postcode}, ${doctor.state}` || "N/A"}</TableCell>
-                      <TableCell>{doctor.dob || "N/A"}</TableCell>
-                      <TableCell>{doctor.highestQualification || "N/A"}</TableCell>
-                      <TableCell>{doctor.totalYearsOfExp || "N/A"}</TableCell>
-                      <TableCell>{doctor.rating || "N/A"}</TableCell>
-                    </TableRow>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24, alignItems: 'center' }}>
+          {filteredDoctors.map((doctor) => (
+            <Paper key={doctor.id} elevation={2} style={{ width: '40%', minWidth: 320, margin: 15, padding: 20, cursor: 'pointer', textAlign: 'left' }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+                <Typography variant="h6" style={{ fontWeight: 600, fontSize: 20, marginRight: 8 }}>
+                  Doctor Name:
+                </Typography>
+                <Typography variant="h5" style={{ fontWeight: 600, fontSize: 22 }}>
+                  {doctor.firstName} {doctor.lastName}
+                </Typography>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+                <Typography variant="subtitle1" style={{ marginRight: 8 }}>
+                  Speciality:
+                </Typography>
+                <Typography variant="body1">{doctor.speciality}</Typography>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
+                <Typography variant="subtitle1" style={{ marginRight: 8 }}>
+                  Rating:
+                </Typography>
+                <span style={{ display: 'flex', alignItems: 'center' }}>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span key={i} style={{ color: i < Math.round(Number(doctor.rating)) ? '#FFD700' : '#ccc', fontSize: 20 }}>&#9733;</span>
                   ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </CardContent>
-        </Card>
-        <Dialog open={open} onClose={handleClose}>
-          <DialogTitle>Add Doctor</DialogTitle>
-          <DialogContent>
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  style={{ width: '40%', margin: 10, textTransform: 'none' }}
+                  onClick={() => {
+                    if (!sessionStorage.getItem("accessToken")) {
+                      if (setLoginModalOpen) setLoginModalOpen(true);
+                      return;
+                    }
+                    setBookDoctor(doctor);
+                    setBookOpen(true);
+                  }}
+                >
+                  Book Appointment
+                </Button>
+                <Button
+                  variant="contained"
+                  style={{ width: '40%', margin: 10, textTransform: 'none', backgroundColor: '#43a047', color: '#fff' }}
+                  onClick={() => {
+                    setDetailsDoctor(doctor);
+                    setDetailsOpen(true);
+                  }}
+                >
+                  View Details
+                </Button>
+              </div>
+            </Paper>
+          ))}
+        </div>
+        <BookAppointment
+          open={bookOpen}
+          onClose={() => setBookOpen(false)}
+          doctor={bookDoctor || { firstName: '', lastName: '', id: '' }}
+          baseUrl={baseUrl}
+        />
+        <DoctorDetails
+          open={detailsOpen}
+          onClose={() => setDetailsOpen(false)}
+          doctor={detailsDoctor}
+        />
+        <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
+          <DialogTitle disableTypography style={{
+            background: 'purple',
+            height: 70,
+            padding: 11,
+            color: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            fontWeight: 600,
+            fontSize: 20
+          }}>
+            Add Doctor
+          </DialogTitle>
+          <DialogContent style={{ padding: 20, textAlign: 'left' }}>
             <TextField
               label="First Name"
               name="firstName"
@@ -462,11 +487,11 @@ const DoctorList = ({ baseUrl }) => {
               margin="normal"
             />
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose} color="secondary">
+          <DialogActions style={{ justifyContent: 'center', paddingBottom: 16 }}>
+            <Button onClick={handleClose} color="secondary" variant="outlined" style={{ margin: 10, width: '40%' }}>
               Cancel
             </Button>
-            <Button onClick={handleSubmit} color="primary">
+            <Button onClick={handleSubmit} color="primary" variant="contained" style={{ margin: 10, width: '40%' }}>
               Submit
             </Button>
           </DialogActions>

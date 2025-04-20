@@ -6,7 +6,7 @@ import AppointmentsTable from "../appointment/AppointmentsTable";
 import BookAppointment from "../appointment/BookAppointment";
 import DoctorList from "../doctorList/DoctorList";
 import RateAppointment from "../appointment/RateAppointment";
-import Topbar from "../../common/Topbar";
+import Header from "../../common/header/Header";
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -93,7 +93,7 @@ const Dashboard = ({ baseUrl }) => {
 
   return (
     <div>
-      <Topbar />
+      <Header />
       <div className={classes.container}>
         <Tabs value={activeTab} onChange={handleTabChange} centered>
           <Tab label="Home" />
