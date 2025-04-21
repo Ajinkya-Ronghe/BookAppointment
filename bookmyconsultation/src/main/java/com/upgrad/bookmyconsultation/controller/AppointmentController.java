@@ -28,6 +28,10 @@ public class AppointmentController {
     @PostMapping
     public ResponseEntity<?> bookAppointment(@RequestBody Appointment appointment) {
         try {
+            // Set createdDate to today if not provided
+            if (appointment.getCreatedDate() == null || appointment.getCreatedDate().isEmpty()) {
+                appointment.setCreatedDate(java.time.LocalDate.now().toString());
+            }
             // Validate the appointment details
             ValidationUtils.validate(appointment);
 
@@ -40,21 +44,6 @@ public class AppointmentController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-/*     // GET method to retrieve an appointment by ID
-    @GetMapping("/{appointmentId}")
-    public ResponseEntity<?> getAppointment(@PathVariable String appointmentId) {
-        try {
-            // Retrieve the appointment details
-            Appointment appointment = appointmentService.getAppointment(appointmentId);
-
-            // Return the appointment details
-            return ResponseEntity.ok(appointment);
-        } catch (ResourceUnAvailableException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
- */
 
     // GET method to retrieve all appointments by user ID
     @GetMapping("/user/{userId}")

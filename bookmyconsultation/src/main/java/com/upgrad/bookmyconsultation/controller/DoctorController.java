@@ -29,9 +29,8 @@ public class DoctorController {
     private AddressRepository addressRepository;
 
     // POST method to register a doctor
-    // POST method to register a doctor
     @PostMapping
-    public ResponseEntity<?> registerDoctor(@RequestHeader("authorization") String accessToken, @RequestBody Doctor doctor) {
+    public ResponseEntity<?> registerDoctor(@RequestHeader("authorization") String accessToken, @RequestBody java.util.Map<String, Object> doctorMap) {
         String token = accessToken.replace("Bearer ", "");
         String role = (String) JwtTokenProvider.decodeToken(token).get("role");
 
@@ -40,22 +39,59 @@ public class DoctorController {
         }
 
         try {
+            Doctor doctor = new Doctor();
+            doctor.setFirstName((String) doctorMap.get("firstName"));
+            doctor.setLastName((String) doctorMap.get("lastName"));
+            doctor.setSpeciality(doctorMap.get("speciality") != null ? com.upgrad.bookmyconsultation.enums.Speciality.valueOf((String) doctorMap.get("speciality")) : null);
+            doctor.setDob((String) doctorMap.get("dob"));
+            doctor.setMobile((String) doctorMap.get("mobile"));
+            doctor.setEmailId((String) doctorMap.get("emailId"));
+            doctor.setPan((String) doctorMap.get("pan"));
+           // doctor.setPassword((String) doctorMap.get("password"));
+            doctor.setHighestQualification((String) doctorMap.get("highestQualification"));
+            doctor.setCollege((String) doctorMap.get("college"));
+            // Defensive: handle both int and string for totalYearsOfExp
+            Object expObj = doctorMap.get("totalYearsOfExp");
+            if (expObj != null) {
+                if (expObj instanceof Integer) {
+                    doctor.setTotalYearsOfExp((Integer) expObj);
+                } else if (expObj instanceof String && !((String) expObj).isEmpty()) {
+                    doctor.setTotalYearsOfExp(Integer.valueOf((String) expObj));
+                }
+            }
+            Object ratingObj = doctorMap.get("rating");
+            if (ratingObj != null) {
+                if (ratingObj instanceof Number) {
+                    doctor.setRating(((Number) ratingObj).doubleValue());
+                } else if (ratingObj instanceof String && !((String) ratingObj).isEmpty()) {
+                    doctor.setRating(Double.valueOf((String) ratingObj));
+                }
+            }
+            // Extract address fields from nested address object
+            java.util.Map<String, Object> addressMap = (java.util.Map<String, Object>) doctorMap.get("address");
+            if (addressMap != null) {
+                doctor.setAddressLine1((String) addressMap.get("addressLine1"));
+                doctor.setAddressLine2((String) addressMap.get("addressLine2"));
+                doctor.setCity((String) addressMap.get("city"));
+                doctor.setState((String) addressMap.get("state"));
+                doctor.setPostcode((String) addressMap.get("postCode"));
+            }
             ValidationUtils.validate(doctor);
             Doctor savedDoctor = doctorService.register(doctor);
-
-            // Save address in the address table
             Address address = new Address();
-            address.setId(savedDoctor.getId()); // Use the doctor's ID as the address ID
+            address.setId(savedDoctor.getId());
             address.setAddressLine1(doctor.getAddressLine1());
             address.setAddressLine2(doctor.getAddressLine2());
             address.setCity(doctor.getCity());
             address.setPostcode(doctor.getPostcode());
             address.setState(doctor.getState());
             addressRepository.save(address);
-
             return ResponseEntity.ok(savedDoctor);
         } catch (InvalidInputException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing doctor registration: " + e.getMessage());
         }
     }
 

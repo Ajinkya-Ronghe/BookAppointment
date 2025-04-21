@@ -105,15 +105,18 @@ const DoctorList = ({ baseUrl, hideTitle, hideSearch, setLoginModalOpen }) => {
     mobile: "",
     emailId: "",
     pan: "",
+    password: "",
     highestQualification: "",
     college: "",
     totalYearsOfExp: "",
     rating: "",
-    addressLine1: "", // New field
-    addressLine2: "", // New field
-    city: "",         // New field
-    postcode: "",     // New field
-    state: "",        // New field
+    address: {
+      addressLine1: "",
+      addressLine2: "",
+      city: "",
+      state: "",
+      postCode: ""
+    }
   });
 
   useEffect(() => {
@@ -208,7 +211,17 @@ const DoctorList = ({ baseUrl, hideTitle, hideSearch, setLoginModalOpen }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setNewDoctor({ ...newDoctor, [name]: value });
+    if (["addressLine1", "addressLine2", "city", "state", "postCode"].includes(name)) {
+      setNewDoctor({
+        ...newDoctor,
+        address: {
+          ...newDoctor.address,
+          [name]: value
+        }
+      });
+    } else {
+      setNewDoctor({ ...newDoctor, [name]: value });
+    }
   };
 
   const handleSubmit = async () => {
@@ -415,6 +428,15 @@ const DoctorList = ({ baseUrl, hideTitle, hideSearch, setLoginModalOpen }) => {
               margin="normal"
             />
             <TextField
+              label="Password"
+              name="password"
+              type="password"
+              value={newDoctor.password}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
               label="Qualification"
               name="highestQualification"
               value={newDoctor.highestQualification}
@@ -449,7 +471,7 @@ const DoctorList = ({ baseUrl, hideTitle, hideSearch, setLoginModalOpen }) => {
             <TextField
               label="Address Line 1"
               name="addressLine1"
-              value={newDoctor.addressLine1}
+              value={newDoctor.address.addressLine1}
               onChange={handleChange}
               fullWidth
               margin="normal"
@@ -457,7 +479,7 @@ const DoctorList = ({ baseUrl, hideTitle, hideSearch, setLoginModalOpen }) => {
             <TextField
               label="Address Line 2"
               name="addressLine2"
-              value={newDoctor.addressLine2}
+              value={newDoctor.address.addressLine2}
               onChange={handleChange}
               fullWidth
               margin="normal"
@@ -465,15 +487,15 @@ const DoctorList = ({ baseUrl, hideTitle, hideSearch, setLoginModalOpen }) => {
             <TextField
               label="City"
               name="city"
-              value={newDoctor.city}
+              value={newDoctor.address.city}
               onChange={handleChange}
               fullWidth
               margin="normal"
             />
             <TextField
               label="Postcode"
-              name="postcode"
-              value={newDoctor.postcode}
+              name="postCode"
+              value={newDoctor.address.postCode}
               onChange={handleChange}
               fullWidth
               margin="normal"
@@ -481,7 +503,7 @@ const DoctorList = ({ baseUrl, hideTitle, hideSearch, setLoginModalOpen }) => {
             <TextField
               label="State"
               name="state"
-              value={newDoctor.state}
+              value={newDoctor.address.state}
               onChange={handleChange}
               fullWidth
               margin="normal"

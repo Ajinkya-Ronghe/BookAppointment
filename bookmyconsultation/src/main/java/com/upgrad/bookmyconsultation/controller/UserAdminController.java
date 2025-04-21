@@ -37,6 +37,12 @@ public class UserAdminController {
         }
     }
 
+    // POST /users/register for Postman compatibility
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        return createUser(user);
+    }
+
     // GET method to retrieve a user by ID
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@RequestHeader("authorization") String accessToken,
@@ -49,9 +55,39 @@ public class UserAdminController {
         }
     }
 
+    // GET /users/{email} for Postman compatibility (treats email as ID)
+    @GetMapping(path = "", params = "email")
+    public ResponseEntity<User> getUserByEmail(@RequestHeader("authorization") String accessToken,
+                                               @RequestParam("email") String email) {
+        try {
+            User user = userService.getUser(email);
+            return ResponseEntity.ok(user);
+        } catch (ResourceUnAvailableException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // GET /users/{email} as alias for /users/{id} (if email is used as path variable)
+    @GetMapping(path = "/{email:.+}", params = "!appointments")
+    public ResponseEntity<User> getUserByEmailPath(@RequestHeader("authorization") String accessToken,
+                                                   @PathVariable("email") String email) {
+        try {
+            User user = userService.getUser(email);
+            return ResponseEntity.ok(user);
+        } catch (ResourceUnAvailableException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     // GET method to retrieve appointments for a user
     @GetMapping("/{userId}/appointments")
     public ResponseEntity<?> getAppointmentForUser(@PathVariable("userId") String userId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsForUser(userId));
+    }
+
+    // GET /users/{email}/appointments for Postman compatibility
+    @GetMapping(path = "/{email:.+}/appointments")
+    public ResponseEntity<?> getAppointmentForUserByEmail(@PathVariable("email") String email) {
+        return ResponseEntity.ok(appointmentService.getAppointmentsForUser(email));
     }
 }

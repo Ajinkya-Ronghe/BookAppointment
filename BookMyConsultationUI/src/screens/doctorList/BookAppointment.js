@@ -107,16 +107,16 @@ const BookAppointment = ({ open, onClose, doctor, baseUrl }) => {
       await axios.post(
         `${baseUrl}/appointments`,
         {
-          doctorName,
           doctorId: doctor.id,
+          doctorName: `Dr. ${doctor.firstName} ${doctor.lastName}`,
+          userId,
+          userName,
+          userEmailId,
           appointmentDate: date,
           timeSlot: slot,
+          status: "CONFIRMED",
           priorMedicalHistory: medicalHistory,
           symptoms,
-          status: "CONFIRMED",
-          userId,
-          userEmailId,
-          userName,
           createdDate,
         },
         {

@@ -79,7 +79,7 @@ const Register = ({ baseUrl }) => {
     };
 
     try {
-      const response = await apiClient.post(`${baseUrl}/users`, userData);
+      const response = await apiClient.post(`${baseUrl}/users/register`, userData);
       alert("Registration successful!");
       history.push("/login");
     } catch (error) {

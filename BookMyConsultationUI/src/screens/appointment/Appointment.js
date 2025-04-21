@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Typography, Paper, Button, Box } from "@material-ui/core";
 import axios from "../../util/fetch";
 
-const baseUrl = "http://localhost:8081";
+const baseUrl = "http://localhost:8080";
 
 const Appointment = ({ setRateModalOpen, setSelectedAppointment }) => {
   const [appointments, setAppointments] = useState([]);
@@ -34,6 +34,30 @@ const Appointment = ({ setRateModalOpen, setSelectedAppointment }) => {
     fetchAppointments();
   }, [isLoggedIn]);
 
+  // Fetch appointments again when the component is clicked (tab is selected)
+  const handleRefresh = async () => {
+    if (!isLoggedIn) return;
+    try {
+      const token = sessionStorage.getItem("accessToken");
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map((c) => `%${("00" + c.charCodeAt(0).toString(16)).slice(-2)}`)
+          .join("")
+      );
+      const userId = JSON.parse(jsonPayload)?.aud;
+      if (!userId) return;
+      const response = await axios.get(`${baseUrl}/appointments/user/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setAppointments(response.data);
+    } catch (error) {
+      setAppointments([]);
+    }
+  };
+
   if (!isLoggedIn) {
     return (
       <Typography style={{ color: "#000", fontSize: 20, textAlign: "center", background: "transparent", marginTop: 24 }}>
@@ -51,7 +75,7 @@ const Appointment = ({ setRateModalOpen, setSelectedAppointment }) => {
   }
 
   return (
-    <Box style={{ width: '100%' }}>
+    <Box style={{ width: '100%' }} onClick={handleRefresh}>
       {appointments.map((appointment) => (
         <Paper key={appointment.appointmentId} elevation={2} style={{ width: '100%', margin: 15, padding: 20, cursor: 'pointer', textAlign: 'left', borderRadius: 12 }}>
           <Typography variant="h6" style={{ fontWeight: 600, fontSize: 22, marginBottom: 8 }}>

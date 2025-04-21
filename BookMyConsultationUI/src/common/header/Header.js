@@ -138,7 +138,7 @@ const Header = ({ forceLoginModal, setForceLoginModal }) => {
     setRegisterGeneralError("");
     if (Object.keys(errors).length > 0) return;
     try {
-      await apiClient.post("/users", {
+      await apiClient.post("/users/register", {
         firstName: registerForm.firstName,
         lastName: registerForm.lastName,
         emailId: registerForm.email,

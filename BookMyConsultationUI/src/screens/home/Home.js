@@ -6,7 +6,7 @@ import Header from "../../common/header/Header";
 import Appointment from "../appointment/Appointment";
 import RateAppointment from "../appointment/RateAppointment";
 
-const baseUrl = "http://localhost:8081";
+const baseUrl = "http://localhost:8080";
 
 const AppointmentTiles = ({ appointments, setLoginModalOpen }) => {
   if (!appointments || appointments.length === 0) {

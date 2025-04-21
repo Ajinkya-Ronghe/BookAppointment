@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create an Axios instance with correct backend URL
 const apiClient = axios.create({
-  baseURL: "http://localhost:8081", // Correct backend URL
+  baseURL: "http://localhost:8080", // Match backend and Postman collection port
   headers: {
     "Content-Type": "application/json",
   },
