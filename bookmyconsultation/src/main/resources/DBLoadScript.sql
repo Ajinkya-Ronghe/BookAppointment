@@ -1,3 +1,7 @@
+-- Table structure for table `address`
+--
+
+DROP TABLE IF EXISTS `address`;
 CREATE TABLE `address` (
   `id` varchar(255) NOT NULL,
   `address_line1` varchar(255) DEFAULT NULL,
@@ -8,22 +12,32 @@ CREATE TABLE `address` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `appointment` (
-    `appointment_id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-    `appointment_date` VARCHAR(255) DEFAULT NULL,
-    `created_date` VARCHAR(255) DEFAULT NULL,
-    `doctor_id` VARCHAR(255) DEFAULT NULL,
-    `doctor_name` VARCHAR(255) DEFAULT NULL,
-    `prior_medical_history` VARCHAR(255) DEFAULT NULL,
-    `status` VARCHAR(255) DEFAULT NULL,
-    `symptoms` VARCHAR(255) DEFAULT NULL,
-    `time_slot` VARCHAR(255) DEFAULT NULL,
-    `user_email_id` VARCHAR(255) DEFAULT NULL,
-    `user_id` VARCHAR(255) DEFAULT NULL,
-    `user_name` VARCHAR(255) DEFAULT NULL,
-    PRIMARY KEY (`appointment_id`)
-)  ENGINE=INNODB DEFAULT CHARSET=UTF8MB4 COLLATE = UTF8MB4_0900_AI_CI;
+--
+-- Table structure for table `appointment`
+--
 
+DROP TABLE IF EXISTS `appointment`;
+CREATE TABLE `appointment` (
+  `appointment_id` bigint NOT NULL AUTO_INCREMENT,
+  `appointment_date` varchar(255) DEFAULT NULL,
+  `created_date` varchar(255) DEFAULT NULL,
+  `doctor_id` varchar(255) DEFAULT NULL,
+  `doctor_name` varchar(255) DEFAULT NULL,
+  `prior_medical_history` varchar(255) DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `symptoms` varchar(255) DEFAULT NULL,
+  `time_slot` varchar(255) DEFAULT NULL,
+  `user_email_id` varchar(255) DEFAULT NULL,
+  `user_id` varchar(255) DEFAULT NULL,
+  `user_name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`appointment_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Table structure for table `doctor`
+--
+
+DROP TABLE IF EXISTS `doctor`;
 CREATE TABLE `doctor` (
   `id` varchar(255) NOT NULL,
   `college` varchar(255) DEFAULT NULL,
@@ -36,19 +50,29 @@ CREATE TABLE `doctor` (
   `pan` varchar(255) DEFAULT NULL,
   `rating` double DEFAULT NULL,
   `speciality` varchar(255) DEFAULT NULL,
-  `total_years_of_exp` int(11) DEFAULT NULL,
+  `total_years_of_exp` int DEFAULT NULL
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Table structure for table `rating`
+--
+
+DROP TABLE IF EXISTS `rating`;
 CREATE TABLE `rating` (
   `id` varchar(255) NOT NULL,
   `appointment_id` varchar(255) DEFAULT NULL,
   `comments` varchar(255) DEFAULT NULL,
   `doctor_id` varchar(255) DEFAULT NULL,
-  `rating` int(11) DEFAULT NULL,
+  `rating` int DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Table structure for table `user`
+--
+
+DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `email_id` varchar(255) NOT NULL,
   `created_date` varchar(255) DEFAULT NULL,
@@ -58,11 +82,17 @@ CREATE TABLE `user` (
   `mobile` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `salt` varchar(255) DEFAULT NULL,
+  `role` varchar(45) DEFAULT 'user',
   PRIMARY KEY (`email_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Table structure for table `user_auth_token`
+--
+
+DROP TABLE IF EXISTS `user_auth_token`;
 CREATE TABLE `user_auth_token` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` bigint NOT NULL AUTO_INCREMENT,
   `access_token` varchar(1000) DEFAULT NULL,
   `expires_at` datetime DEFAULT NULL,
   `login_at` datetime DEFAULT NULL,
@@ -71,9 +101,7 @@ CREATE TABLE `user_auth_token` (
   PRIMARY KEY (`id`),
   KEY `FKsgoqgsfs8lfll3g069mei5l13` (`user_id`),
   CONSTRAINT `FKsgoqgsfs8lfll3g069mei5l13` FOREIGN KEY (`user_id`) REFERENCES `user` (`email_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT INTO `doctor` (`id`,`college`,`dob`,`first_Name`,`last_Name`,`speciality`,`mobile`,`email_Id`,`highest_Qualification`,`rating`,`total_Years_Of_Exp`,`pan`) VALUES ("UUID-1","Bibendum Incorporated","2021-05-16","Amity","Stokes","GENERAL_PHYSICIAN","16750509 2135","Aliquam@musDonecdignissim.edu","MBBS",2,7,"YTV22PUB4TQ"),("UUID-2","Enim Consequat Purus LLC","2021-09-16","Blossom","Valentine","PULMONOLOGIST","16030728 0891","malesuada@lacusMaurisnon.com","MDS",5,20,"KAR90SJR5KQ"),("UUID-3","Risus Duis PC","2021-02-05","Nina","Gill","CARDIOLOGIST","16501009 0784","ipsum.leo.elementum@purusac.com","BDS",4,13,"JOP27DKW3XQ"),("UUID-4","Odio Vel Est Consulting","2022-03-28","Martha","Rivers","ENT","16771219 2348","dignissim.tempor@lorem.net","MBBS",2,49,"NIN10STB6ZJ"),("UUID-5","Justo Sit Amet Limited","2021-01-12","Judith","Best","ENT","16940301 8329","sit.amet@eulacus.ca","MDS",3,1,"GYX95GRG8FW"),("UUID-6","Nullam Enim Institute","2022-03-17","Sara","Carson","CARDIOLOGIST","16170217 4143","auctor@tinciduntnibhPhasellus.net","MDS",1,30,"OBL13JHJ9PW"),("UUID-7","Sed Diam Lorem LLP","2021-04-16","Zahir","Levine","GASTRO","16190627 3881","Aliquam.vulputate@Naminterdumenim.co.uk","MBBS",5,44,"VRV00DCP6NU"),("UUID-8","Phasellus Ornare Fusce LLC","2021-07-20","Cathleen","Bernard","DENTIST","16640729 9103","egestas.lacinia.Sed@Donecest.co.uk","MBBS",1,21,"YOS61WAA1ND"),("UUID-9","Ipsum Corporation","2021-01-02","Jamalia","Crane","PULMONOLOGIST","16970417 5513","nunc.In.at@MaurismagnaDuis.ca","MBBS",2,42,"XYC71FET6GO"),("UUID-10","Tellus Non Magna Associates","2022-04-03","Mia","Ewing","GASTRO","16470722 7619","ornare@MorbivehiculaPellentesque.co.uk","MDS",3,18,"NNC54LGX7OO");
 INSERT INTO `doctor` (`id`,`college`,`dob`,`first_Name`,`last_Name`,`speciality`,`mobile`,`email_Id`,`highest_Qualification`,`rating`,`total_Years_Of_Exp`,`pan`) VALUES ("UUID-11","Interdum Ligula PC","2021-11-17","Ocean","Garner","PULMONOLOGIST","16060416 1182","id.erat@conubianostra.edu","BDS",5,36,"XRA69VTH2CE"),("UUID-12","Lobortis Augue Scelerisque Foundation","2020-10-24","Uriah","Head","CARDIOLOGIST","16540220 1361","enim@Phasellus.edu","MDS",4,46,"FCG60XRE5TA"),("UUID-13","Odio Nam Incorporated","2022-01-09","Georgia","Cameron","DENTIST","16171026 3177","augue.ac.ipsum@egestashendreritneque.edu","BDS",3,34,"DPM49XGU8SY"),("UUID-14","Elementum Industries","2021-04-10","Daniel","Gilliam","GASTRO","16761107 6071","hendrerit.id.ante@risusDonec.edu","MBBS",2,18,"YVX94RGG8OF"),("UUID-15","Ac Mi Industries","2021-09-17","Dakota","Elliott","DENTIST","16200412 4455","ornare.libero.at@enim.com","MDS",1,44,"RFA97HAA8TH"),("UUID-16","Primis In Ltd","2020-09-19","Imelda","Gomez","DENTIST","16831204 9656","egestas.a.dui@acnulla.co.uk","MDS",1,12,"MOC34NRE2HM"),("UUID-17","Proin Sed Turpis Institute","2020-12-16","Jessica","Molina","PULMONOLOGIST","16041002 6520","fringilla@ami.com","MDS",1,45,"FEY04ICD6SV"),("UUID-18","Purus Nullam Consulting","2021-06-04","Neville","Holloway","GASTRO","16061210 4836","dictum.augue@euultricessit.net","MBBS",2,38,"TND34NCX1FK"),("UUID-19","Eget Corporation","2022-04-06","Kennan","Hess","GENERAL_PHYSICIAN","16131024 0187","arcu.Curabitur@loremDonecelementum.org","MBBS",5,23,"DAT70NTH3GB"),("UUID-20","Et Magnis Dis Corp.","2020-11-01","Caleb","Galloway","GENERAL_PHYSICIAN","16700212 1205","odio.sagittis.semper@nonhendrerit.co.uk","MDS",2,46,"QKW35EZP3PH");
@@ -97,4 +125,3 @@ INSERT INTO `address` (`id`,`address_Line1`,`address_Line2`,`city`,`state`,`post
 INSERT INTO `address` (`id`,`address_Line1`,`address_Line2`,`city`,`state`,`postcode`) VALUES ("UUID-71","Ap #816-1740 Eu Av.","58.53452, 121.29411","Henderson","NV","3342"),("UUID-72","518-5154 Magna Av.","-77.38097, -105.10324","Palmerston North","North Island","20415"),("UUID-73","P.O. Box 213, 7104 Vestibulum Avenue","-39.1968, 121.17034","Ottawa","ON","Z5709"),("UUID-74","Ap #859-4933 Dapibus Rd.","10.10014, 35.00191","Bollnäs","X","39853"),("UUID-75","Ap #518-5083 Ullamcorper Avenue","-69.54127, 63.78212","Istanbul","Ist","J5N 8X3"),("UUID-76","Ap #493-5117 Nibh. Avenue","-26.49574, -97.43467","Owerri","Imo","68422-73915"),("UUID-77","830-9930 Egestas Rd.","-18.25957, -125.22821","Cisano Bergamasco","Lombardia","8617"),("UUID-78","Ap #399-2511 Tempus Avenue","-82.81426, -19.49933","Vologda","Vologda Oblast","18620"),("UUID-79","962-9396 Enim Rd.","-75.47409, -67.31862","Mogi das Cruzes","São Paulo","4247"),("UUID-80","Ap #125-4439 In Street","83.39168, 93.03198","Chiclayo","LAM","61545-110");
 INSERT INTO `address` (`id`,`address_Line1`,`address_Line2`,`city`,`state`,`postcode`) VALUES ("UUID-81","556-8874 Nec, Rd.","-36.43374, 36.21515","Fort Smith","AR","73684"),("UUID-82","P.O. Box 203, 6408 Arcu St.","32.10628, 6.465","Palembang","SS","01506"),("UUID-83","Ap #784-7638 Quam Av.","37.8144, 39.13138","Çermik","Diy","DY2V 1OK"),("UUID-84","P.O. Box 238, 916 Velit. Street","-5.5317, -89.97669","Lleida","Catalunya","321034"),("UUID-85","182-3702 At, Rd.","-35.22562, -171.10507","Cartagena","Bolívar","434953"),("UUID-86","P.O. Box 816, 7682 Sed, Road","49.45098, 64.38045","Warri","DE","6308"),("UUID-87","Ap #292-2259 Donec Road","-42.84345, -56.39187","Khairpur","Punjab","142549"),("UUID-88","602-9130 Magna. Ave","53.09232, -99.98488","Lo Prado","RM","RL5 5QC"),("UUID-89","309-5462 Ullamcorper, Ave","15.70422, 131.03439","Sechura","PIU","7577"),("UUID-90","P.O. Box 790, 2511 Per Av.","-87.21455, 118.61338","Hafizabad","Punjab","572473");
 INSERT INTO `address` (`id`,`address_Line1`,`address_Line2`,`city`,`state`,`postcode`) VALUES ("UUID-91","Ap #156-4629 Sit St.","80.76402, 51.24831","Vienna","Vienna","78238"),("UUID-92","P.O. Box 352, 6053 At, Ave","-58.0673, 52.99224","Gwangju","Gye","2088"),("UUID-93","2790 Cursus Rd.","-82.34946, -144.92295","Timaru","SI","893692"),("UUID-94","Ap #431-8311 Pede Street","-42.32868, -69.39806","Pabianice","LD","95937"),("UUID-95","562-7646 Magna Road","-87.84873, -11.11033","Brandon","Manitoba","11654-69638"),("UUID-96","2854 Nullam Ave","26.18882, -131.70011","Utrecht","U.","53930"),("UUID-97","P.O. Box 935, 4533 Tellus Street","13.51632, 149.55655","Tulsa","OK","40804"),("UUID-98","P.O. Box 657, 356 Amet Avenue","2.35202, 18.74333","Berlin","BE","49395"),("UUID-99","P.O. Box 382, 6353 Sed Ave","-65.60873, -106.07911","Mataró","Catalunya","376688"),("UUID-100","8068 Pulvinar Rd.","4.15097, -72.68161","Murree","PU","88570-68315");
-
