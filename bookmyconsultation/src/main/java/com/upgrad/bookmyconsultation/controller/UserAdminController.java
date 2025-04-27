@@ -24,14 +24,25 @@ public class UserAdminController {
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody User user) {
         try {
+            // Set createdDate to today if not provided
+            if (user.getCreatedDate() == null || user.getCreatedDate().isEmpty()) {
+                user.setCreatedDate(java.time.LocalDate.now().toString());
+            }
+            // Set role to "user" unless explicitly set
+            if (user.getRole() == null || user.getRole().isEmpty()) {
+                user.setRole("user");
+            }
+
             // Validate the user details
             ValidationUtils.validate(user);
 
             // Register the user
             User savedUser = userService.register(user);
 
-            // Return HTTP response with status OK
-            return ResponseEntity.ok(savedUser);
+            // Return HTTP response with user under "user" key
+            java.util.Map<String, Object> response = new java.util.HashMap<>();
+            response.put("user", savedUser);
+            return ResponseEntity.ok(response);
         } catch (InvalidInputException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -85,9 +96,9 @@ public class UserAdminController {
         return ResponseEntity.ok(appointmentService.getAppointmentsForUser(userId));
     }
 
-    // GET /users/{email}/appointments for Postman compatibility
+/*     // GET /users/{email}/appointments for Postman compatibility
     @GetMapping(path = "/{email:.+}/appointments")
     public ResponseEntity<?> getAppointmentForUserByEmail(@PathVariable("email") String email) {
         return ResponseEntity.ok(appointmentService.getAppointmentsForUser(email));
-    }
+    } */
 }

@@ -59,5 +59,16 @@ public class AppointmentController {
             return ResponseEntity.status(500).body("An error occurred while fetching appointments.");
         }
     }
+
+    // GET method to retrieve an appointment by appointment ID
+    @GetMapping("/{appointmentId}")
+    public ResponseEntity<?> getAppointmentById(@PathVariable Long appointmentId) {
+        Appointment appointment = appointmentService.getAppointmentById(appointmentId);
+        if (appointment != null) {
+            return ResponseEntity.ok(appointment);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
 

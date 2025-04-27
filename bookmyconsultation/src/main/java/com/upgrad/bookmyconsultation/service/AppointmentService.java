@@ -47,5 +47,9 @@ public class AppointmentService {
     public List<Appointment> getAppointmentsByUserId(String userId) {
         return appointmentRepository.findByUserId(userId);
     }
+
+    public Appointment getAppointmentById(Long appointmentId) {
+        return appointmentRepository.findById(appointmentId).orElse(null);
+    }
 }
 
